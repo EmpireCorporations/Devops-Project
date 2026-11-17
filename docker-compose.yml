@@ -1,0 +1,25 @@
+services:
+
+  web:
+    build: ./web
+    container_name: parking_web
+    ports:
+      - "8080:80"
+    depends_on:
+      - storage
+
+  storage:
+    build: ./storage
+    container_name: parking_storage
+    ports:
+      - "8081:80"
+    volumes:
+      - parking_images:/usr/local/apache2/htdocs/images
+    command: >
+      sh -c 'if [ -z "$$(ls -A /usr/local/apache2/htdocs/images 2>/dev/null)" ];
+      then cp -r /seed-images/. /usr/local/apache2/htdocs/images/;
+      fi;
+      httpd-foreground'
+
+volumes:
+  parking_images:
